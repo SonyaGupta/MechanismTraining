@@ -60,7 +60,7 @@ public class RobotContainer {
     ).onFalse(m_shooter.runOnce(m_shooter::stop));
 
     //Command 2: hold 0
-    m_driverController.cross().whileTrue(
+    m_driverController.circle().whileTrue(
         m_shooter.run(() -> m_shooter.setShooterPosition(
             ShooterConstants.Command2SpeedRPM,   // flywheel target, RPM
             ShooterConstants.Command2HoodAngle   // hood target, degrees

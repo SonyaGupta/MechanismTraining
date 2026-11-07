@@ -61,7 +61,7 @@ public class ShooterSubsystem extends SubsystemBase {
         
         pivotConfiguration.Feedback.SensorToMechanismRatio = 1.0; //need to check
         // CANcoder rotations per hood rotation
-        pivotConfiguration.Feedback.RotorToSensorRatio = 2.0; //also need to check
+        pivotConfiguration.Feedback.RotorToSensorRatio = 244.411765; //also need to check
         //Motor rotations per CANcoder rotation
 
         TalonFXConfiguration flywheelConfiguration = new TalonFXConfiguration();
@@ -80,7 +80,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
         flyWheelConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast; //Coast so the flywheel spins down without banging against the Bang-Bang control
         //limits power to max limit
-        flyWheelConfig.CurrentLimits.SupplyCurrentLimit = 10; // need to know max limit of flywheel
+        flyWheelConfig.CurrentLimits.SupplyCurrentLimit = 120; // need to know max limit of flywheel
         flyWheelConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
         m_flywheelLeader.getConfigurator().apply(flyWheelConfig);
