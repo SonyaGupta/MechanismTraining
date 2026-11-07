@@ -13,12 +13,20 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static class OperatorConstants {
 
+  public static class OperatorConstants {
+    public static final double DriverControllerPort = 0;
 
   }
 
+
   public static class ShooterConstants {
+
+    public static final double Command1SpeedRPM = 40; //tbd
+    public static final double Command1HoodAngle = 0.014;
+
+    public static final double Command2SpeedRPM = 60;
+    public static final double Command2HoodAngle = 0.096;
     
   }
 }

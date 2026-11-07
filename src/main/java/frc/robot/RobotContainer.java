@@ -5,12 +5,13 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.Autos;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -20,11 +21,12 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
+  private final ShooterSubsystem m_shooter = new ShooterSubsystem();
 
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
- private final CommandPS5Controller m_driverController =
-      new CommandPS5Controller(OperatorConstants.kDriverControllerPort);
+ private final CommandPS5Controller m_driverController = new CommandPS5Controller(0);
+
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -43,11 +45,33 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
+    //Command 1: hold X 
+    // Cross(): a trigger that is true when X is pressed down
+    //WhileTrue(): Remains true & loops while X remains pressed 
+    // m_shooter.run(): Calls command that runs ever 20 ms (requires m_shooter so not other command can use it)
+    
 
-    // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
-    // cancelling on release.
+    m_driverController.cross().whileTrue(
+        m_shooter.run(() -> m_shooter.setShooterPosition(
+            ShooterConstants.Command1SpeedRPM,   // flywheel target, RPM
+            ShooterConstants.Command1HoodAngle   // hood target, degrees
+        ))
+
+    ).onFalse(m_shooter.runOnce(m_shooter::stop));
+
+    //Command 2: hold 0
+    m_driverController.cross().whileTrue(
+        m_shooter.run(() -> m_shooter.setShooterPosition(
+            ShooterConstants.Command2SpeedRPM,   // flywheel target, RPM
+            ShooterConstants.Command2HoodAngle   // hood target, degrees
+        ))
+
+    ).onFalse(m_shooter.runOnce(m_shooter::stop));
   }
+ // on false: when the button is released run command below runOnce()
+
+  
+
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -56,5 +80,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
+    return null;
   }
 }
