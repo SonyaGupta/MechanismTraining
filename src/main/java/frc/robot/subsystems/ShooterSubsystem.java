@@ -11,16 +11,28 @@ import com.ctre.phoenix6.controls.VoltageOut;
 
 
 public class ShooterSubsystem extends SubsystemBase {
-    private final TalonFX m_pivotLeader = new TalonFX(10);
-    private final TalonFX m_pivotFollower = new TalonFX(11);
-    private final CANcoder m_encoder = new CANcoder(12);
 
-    private final TalonFX m_flywheelMoter = new TalonFX(13);
+    private static final int pivotLeaderID = 10;
+    private static final int pivotFollowerID = 11;
+    private static final int encoderId = 12;
+    private static final int flywheelLeaderID = 13;
+    private static final int flywheelFollowerID = 14;
 
-    private final BangBangController m_bang = new BangBangController(50.0);
-// moter control requests instead of .set()
+    private static final double flywheelToleranceRPS = 50.0 / 60.0; // what is the rate of the flywheel?
+
+    private static final double kMaxVolts = 12.0; // what is the max voltage of flywheel?
+
+    private final TalonFX m_pivotLeader = new TalonFX(pivotLeaderID);
+    private final TalonFX m_pivotFollower = new TalonFX(pivotFollowerID);
+    private final CANcoder m_encoder = new CANcoder(encoderId);
+
+    private final TalonFX m_flywheelLeader = new TalonFX(flywheelLeaderID);
+    private final TalonFX m_flywheelFollower = new TalonFX(flywheelFollowerID);
+
+    private final BangBangController m_bang = new BangBangController(flywheelToleranceRPS);
+
     private final VoltageOut m_voltageOut = new VoltageOut(0);
-    private final PositionVoltage m_positionVoltage = new PositionVoltage().withSlot(0);
+    private final PositionVoltage m_positionVoltage = new PositionVoltage(0).withSlot(0);
 
     public ShooterSubsystem() {
 
@@ -29,11 +41,19 @@ public class ShooterSubsystem extends SubsystemBase {
         pivotConfiguration.Slot0.kI = 0;
         pivotConfiguration.Slot0.kD = 0;   
 
-        m_pivotLeader.getConfigurator().apply(pivotConfiguration);
-        m_pivotFollower.setControl(new Follower(m_pivotLeader.getDeviceID,true));
+        pivotConfiguration.MotorOutput.withNeutralMode = NeutralModeValue.Brake; // brake so hood resists movement 
+        pivotConfiguration.Feedback.FeedbackRemoteSensorID = m_encoder.getDeviceID();
+        pivotConfiguration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder; //FusedCANcoder because it is attache
+        
+        pivotConfiguration.Feedback.SensorToMechanismRatio = 1.0; //need to check
+        pivotConfiguration.Feedback.RotorToSensorRatio = 2.0; //also need to check
 
         TalonFXConfiguration flywheelConfiguration = new TalonFXConfiguration();
         m_flywheelMoter.getConfigurator.apply(flywheelConfiguration);
+
+        m_pivotLeader.getConfigurator().apply(pivotConfiguration);
+
+        m_pivotFollower.getConfigurator().apply(new TalonFXConfiguration().withMotorOutput(new MotorOutputConfigs(NeutralModeValue.Brake)));
 
 
     }
